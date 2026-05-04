@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-// Aquí definimos la lista de componentes de nuestro catálogo
+// Aca definimos la lista de componentes del catálogo
 const menuItems = [
   { name: 'Inicio (Base)', path: '/' },
   { name: 'Componente de prueba Nicolas', path: '/tarjeta' },
@@ -27,7 +27,6 @@ const menuItems = [
 </script>
 
 <style scoped>
-/* Estilos sencillos para que se vea ordenado */
 #app { display: flex; font-family: 'Segoe UI', sans-serif; }
 .sidebar { width: 250px; padding: 20px; border-right: 2px solid #eee; height: 100vh; }
 .sidebar ul { list-style: none; padding: 0; }
@@ -45,7 +44,7 @@ const menuItems = [
   font-weight: 500;
 }
 
-/* Efecto al pasar el mouse */
+
 .sidebar ul li a:hover {
   background-color: #42b983;
   color: white;
