@@ -21,7 +21,7 @@
 const menuItems = [
   { name: 'Inicio (Base)', path: '/' },
   { name: 'Componente de prueba Nicolas', path: '/tarjeta' },
-  //{ name: 'Componente 3', path: '/comp-3' },
+  { name: 'Deportes Cristian', path: '/deportes' },
   //{ name: 'Componente 4', path: '/comp-4' }
 ];
 </script>
