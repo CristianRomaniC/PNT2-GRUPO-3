@@ -1,24 +1,28 @@
-
-import { createRouter, createWebHistory } from 'vue-router';
-// Importamos el componente que acabamos de crear
-import ComponenteBase from '../components/ComponenteBase.vue';
-import TarjetaPresentacion from '../components/TarjetaPresentacion.vue';
-import Deportes from '../components/Deportes.vue';
-
-const routes = [
-  { path: '/', component: ComponenteBase },
-  { path: '/tarjeta', component: TarjetaPresentacion },
-  { path: '/deportes', component: Deportes }
-
-  //{ path: '/comp-4', component: Componente4 },
-  
-  // Un extra: si alguien entra a la raíz '/', redirigimos a la tarjeta
-  //{ path: '/', redirect: '/tarjeta' }
-];
+import { createRouter, createWebHistory } from 'vue-router'
+// Importamos los componentes directamente para evitar errores de carga
+import LoginView from '../views/LoginView.vue'
+import ClienteDashboard from '../views/ClienteDashboard.vue'
+import AdminDashboard from '../views/AdminDashboard.vue'
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes
-});
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: '/',
+      name: 'login',
+      component: LoginView,
+    },
+    {
+      path: '/cliente',
+      name: 'cliente',
+      component: ClienteDashboard,
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: AdminDashboard,
+    },
+  ],
+})
 
-export default router;
+export default router
