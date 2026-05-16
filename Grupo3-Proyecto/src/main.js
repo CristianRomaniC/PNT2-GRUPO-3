@@ -1,8 +1,15 @@
-import { createApp } from 'vue';
-import App from './App.vue';
-import router from './router'; // Importamos el archivo que creamos
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
-const app = createApp(App);
+import App from './App.vue'
+import router from './router'
 
-app.use(router); // <-- Aquí le decimos a Vue que use el router
-app.mount('#app');
+const app = createApp(App)
+
+const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
+app.use(pinia)
+app.use(router)
+
+app.mount('#app')
