@@ -24,6 +24,10 @@
             placeholder="Ej: ABC 123 / AB 123 AB" 
             class="input-field" 
           />
+          
+          <p v-if="nuevaPatente && !patenteValida" style="color:red">
+            Patente inválida. Ej: ABC123 o AB123CD
+          </p>
 
           <label>Fecha y Hora:</label>
           <input 
@@ -32,9 +36,15 @@
             class="input-field" 
           />
 
-          <button @click="crearTurno" class="btn-submit" :disabled="cargandoClima">
-            {{ cargandoClima ? 'VERIFICANDO CLIMA...' : 'RESERVAR TURNO' }}
+<!--CRISTIAN AGREGO ↓-->
+          <button
+          @click="crearTurno"
+          class="btn-submit"
+          :disabled="cargandoClima || !patenteValida || !nuevaFecha"
+          >
+          {{ cargandoClima ? 'VERIFICANDO CLIMA...' : 'RESERVAR TURNO' }}
           </button>
+<!--CRISTIAN AGREGO ↑ -->
         </div>
       </div>
 
@@ -58,17 +68,21 @@
 </template>
 
 <script setup>
+//1. Importaciones
     import { ref, computed } from 'vue'
     import { useLavaderoStore } from '../stores/lavadero'
     import { useRouter } from 'vue-router'
 
+//2. Instancias
     const store = useLavaderoStore()
     const router = useRouter()
 
+//3.Variables Reactivas
     const nuevaPatente = ref('')
     const nuevaFecha = ref('')
     const cargandoClima = ref(false) // Estado visual para el botón mientras consulta la API
 
+//4.propiedades computadas
     const misTurnos = computed(() => {
       return store.turnos.filter((t) => t.clienteId === store.usuarioLogueado?.id)
     })
@@ -108,6 +122,8 @@
       }
     }
 
+
+//Funciones Auxiliares
     // Función para validar el formato de la patente
     const validarPatente = (patente) => {
       const textoNormalizado = patente.trim().toUpperCase().replace(/\s+/g, ' ')
@@ -115,6 +131,15 @@
       return regexPatente.test(textoNormalizado)
     }
 
+    // Propiedad computada que validad automaticamente la patente.
+    // Se vuelve a ejecutar cada vez que cambie el valor de nuevaPatente
+    const patenteValida = computed(() => {
+  if (!nuevaPatente.value) return false
+  return validarPatente(nuevaPatente.value)
+})
+
+
+//Funciones Auxiliares.
     // Convertimos crearTurno en una función asíncrona (async)
     const crearTurno = async () => {
       if (!nuevaPatente.value || !nuevaFecha.value) {
@@ -122,9 +147,8 @@
           return
       }
 
-      // Validamos el formato de la patente antes de hacer cualquier consulta al clima
-      if (!validarPatente(nuevaPatente.value)) {
-        alert('Por favor ingresa una patente válida. Ejemplos aceptados: ABC 123 o AB 123 AB')
+      if (!patenteValida.value) {
+        alert("Ingrese una patente válida")
         return
       }
 
