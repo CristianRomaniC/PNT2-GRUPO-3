@@ -29,18 +29,39 @@
             Patente inválida. Ej: ABC123 o AB123CD
           </p>
 
-          <label>Fecha y Hora:</label>
-          <input 
-            v-model="nuevaFecha" 
-            type="datetime-local" 
-            class="input-field" 
+            <h3>Seleccioná un día</h3>
+
+          <WeatherGrid 
+            @seleccionar="seleccionarFecha" 
           />
+
+          <label>Horario:</label>
+
+          <select
+              v-model="horaSeleccionada"
+              class="input-field"
+          >
+
+              <option value="">Seleccione un horario</option>
+
+              <option>08:00</option>
+              <option>09:00</option>
+              <option>10:00</option>
+              <option>11:00</option>
+              <option>12:00</option>
+              <option>13:00</option>
+              <option>14:00</option>
+              <option>15:00</option>
+              <option>16:00</option>
+              <option>17:00</option>
+
+          </select>
 
 <!--CRISTIAN AGREGO ↓-->
           <button
           @click="crearTurno"
           class="btn-submit"
-          :disabled="cargandoClima || !patenteValida || !nuevaFecha"
+          :disabled="cargandoClima || !patenteValida || !fechaSeleccionada || !horaSeleccionada"
           >
           {{ cargandoClima ? 'VERIFICANDO CLIMA...' : 'RESERVAR TURNO' }}
           </button>
@@ -72,6 +93,9 @@
     import { ref, computed } from 'vue'
     import { useLavaderoStore } from '../stores/lavadero'
     import { useRouter } from 'vue-router'
+    import WeatherGrid from '../components/WeatherGrid.vue'
+
+
 
 //2. Instancias
     const store = useLavaderoStore()
@@ -79,9 +103,15 @@
 
 //3.Variables Reactivas
     const nuevaPatente = ref('')
-    const nuevaFecha = ref('')
     const cargandoClima = ref(false) // Estado visual para el botón mientras consulta la API
+    const fechaSeleccionada = ref("")
+    const horaSeleccionada = ref("")
 
+    const seleccionarFecha = (fecha) => {
+
+    fechaSeleccionada.value = fecha
+
+}
 //4.propiedades computadas
     const misTurnos = computed(() => {
       return store.turnos.filter((t) => t.clienteId === store.usuarioLogueado?.id)
@@ -142,7 +172,8 @@
 //Funciones Auxiliares.
     // Convertimos crearTurno en una función asíncrona (async)
     const crearTurno = async () => {
-      if (!nuevaPatente.value || !nuevaFecha.value) {
+      if (!nuevaPatente.value || !fechaSeleccionada.value || !horaSeleccionada.value)
+      {
           alert('Por favor completa todos los campos')
           return
       }
@@ -152,11 +183,14 @@
         return
       }
 
+       // Armar fecha y hora completa
+      const fechaHora = fechaSeleccionada.value + "T" + horaSeleccionada.value
+
+      console.log(fechaHora)
       cargandoClima.value = true
       
       // 1. Consultamos el pronóstico antes de guardar
-      const hayPronosticoLluvia = await verificarSiLlueve(nuevaFecha.value)
-      
+      const hayPronosticoLluvia = await verificarSiLlueve(fechaHora)
       cargandoClima.value = false
 
       // 2. Si llueve, disparamos el cartel interactivo (Opción B)
@@ -171,9 +205,11 @@
       }
 
       // 3. Si no hay lluvia (o el usuario aceptó el riesgo), se guarda el turno
-      store.agendarTurno(nuevaPatente.value, nuevaFecha.value)
+
+      store.agendarTurno(nuevaPatente.value, fechaHora)
       nuevaPatente.value = ''
-      nuevaFecha.value = ''
+      fechaSeleccionada.value = ''
+      horaSeleccionada.value = ''
     }
 
     const obtenerColorEstado = (estado) => {
@@ -189,6 +225,7 @@
       store.logout()
       router.push('/')
     }
+
 </script>
 
 <style scoped>
