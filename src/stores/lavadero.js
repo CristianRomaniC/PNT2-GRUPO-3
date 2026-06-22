@@ -8,10 +8,14 @@ export const useLavaderoStore = defineStore('lavadero', {
       { id: 2, email: 'cliente@test.com', password: '123', rol: 'user', nombre: 'Juan Perez' },
     ],
     turnos: [],
+    precios: {
+      moto: 5000,
+      auto: 8000,
+      camioneta: 12000,
+    },
   }),
   
   actions: {
-    // Iniciar sesión
     login(email, password) {
       const user = this.usuarios.find((u) => u.email === email && u.password === password)
       let estaLogueado = false
@@ -35,17 +39,14 @@ export const useLavaderoStore = defineStore('lavadero', {
       }
 
       this.usuarios.push(nuevoUsuario)
-      console.log('Nuevo usuario registrado:', nuevoUsuario)
       return true
     },
 
-    // Cerrar sesión
     logout() {
       this.usuarioLogueado = null
     },
 
-    // Agendar un turno nuevo
-    agendarTurno(patente, fecha) {
+    agendarTurno(patente, fecha, tipoVehiculo) {
       if (!this.usuarioLogueado) return
 
       const nuevoTurno = {
@@ -54,41 +55,42 @@ export const useLavaderoStore = defineStore('lavadero', {
         nombreCliente: this.usuarioLogueado.nombre,
         patente: patente.toUpperCase(),
         fecha: fecha,
+        tipoVehiculo: tipoVehiculo,
+        precio: this.precios[tipoVehiculo],
         estado: 'Esperando el servicio',
       }
       this.turnos.push(nuevoTurno)
-      console.log('Turno agendado:', nuevoTurno)
     },
 
-    // Actualizar estado (Usado por el admin)
     actualizarEstadoTurno(turnoId, nuevoEstado) {
       const turno = this.turnos.find((t) => t.id === turnoId)
       if (turno) {
         turno.estado = nuevoEstado
-        console.log(`Turno ${turnoId} actualizado a: ${nuevoEstado}`)
       }
     },
-    editarUsuario(id, nuevoNombre) {
-  const usuario = this.usuarios.find(u => u.id === id)
-  if (usuario) {
-    usuario.nombre = nuevoNombre
-  }
-},
 
-eliminarUsuario(id) {
-  // Evitar que el admin se borre a sí mismo
-  if (this.usuarioLogueado && this.usuarioLogueado.id === id) {
-    alert("No puedes eliminar tu propia cuenta de administrador.")
-    return
-  }
-  
-  if (confirm("¿Estás seguro de eliminar este usuario? También se perderán sus turnos.")) {
-    
-    this.usuarios = this.usuarios.filter(u => u.id !== id)
-    
-    this.turnos = this.turnos.filter(t => t.clienteId !== id)
-  }
-}
+    editarUsuario(id, nuevoNombre) {
+      const usuario = this.usuarios.find(u => u.id === id)
+      if (usuario) {
+        usuario.nombre = nuevoNombre
+      }
+    },
+
+    eliminarUsuario(id) {
+      if (this.usuarioLogueado && this.usuarioLogueado.id === id) {
+        alert("No puedes eliminar tu propia cuenta de administrador.")
+        return
+      }
+      
+      if (confirm("¿Estás seguro de eliminar este usuario? También se perderán sus turnos.")) {
+        this.usuarios = this.usuarios.filter(u => u.id !== id)
+        this.turnos = this.turnos.filter(t => t.clienteId !== id)
+      }
+    },
+
+    actualizarPrecios(nuevosPrecios) {
+      this.precios = { ...this.precios, ...nuevosPrecios }
+    },
   },
   
   persist: true,
