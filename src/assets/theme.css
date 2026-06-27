@@ -1,0 +1,143 @@
+/* Tema oscuro "Lavadero SPA" — paleta elegida en el mockup.
+   Se carga DESPUÉS de bootstrap.min.css en main.js, así que estas reglas
+   pisan los estilos por defecto de Bootstrap donde hace falta. */
+
+:root {
+  --color-bg: #0F1115;
+  --color-surface: #1A1D24;
+  --color-surface-alt: #15171D;
+  --color-surface-strong: #232730;
+  --color-border: #2C2F38;
+  --color-border-strong: #34384a;
+  --color-text: #F1EFE8;
+  --color-text-muted: #888780;
+  --color-accent: #5DCAA5;
+  --color-accent-text: #04342C;
+
+  --color-warning-bg: #633806;
+  --color-warning-text: #FAC775;
+  --color-info-bg: #0C447C;
+  --color-info-text: #B5D4F4;
+  --color-success-bg: #27500A;
+  --color-success-text: #C0DD97;
+
+  --color-violet-border: #3C3489;
+  --color-violet-text: #AFA9EC;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* Tarjetas oscuras */
+.card-dark {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+/* Inputs oscuros */
+.form-control-dark {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+.form-control-dark::placeholder {
+  color: var(--color-text-muted);
+}
+.form-control-dark:focus {
+  background-color: var(--color-bg);
+  border-color: var(--color-accent);
+  color: var(--color-text);
+  box-shadow: 0 0 0 0.2rem rgba(93, 202, 165, 0.25);
+}
+
+.form-label-dark {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+/* Botón de acento (verde-agua) */
+.btn-accent {
+  background-color: var(--color-accent);
+  color: var(--color-accent-text);
+  border: none;
+  font-weight: 500;
+}
+.btn-accent:hover {
+  background-color: #4db695;
+  color: var(--color-accent-text);
+}
+
+.link-accent {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+.link-accent:hover {
+  color: #4db695;
+}
+
+/* Tarjetas de estadística del panel admin */
+.stat-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-violet-border);
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+}
+.stat-card .stat-label {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+.stat-card .stat-value {
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin: 0;
+}
+/* Modificador para las tarjetas "neutras" (sin estado propio): número en violeta apagado */
+.stat-value-accent {
+  color: var(--color-violet-text);
+}
+
+/* Tabla con más contraste: header marcado + cebra + borde de color por fila */
+.table-dark-contrast {
+  background-color: var(--color-surface);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+.table-dark-contrast thead th {
+  background-color: var(--color-surface-strong);
+  color: var(--color-text);
+  font-weight: 500;
+  border-bottom: 1px solid var(--color-border-strong) !important;
+}
+.table-dark-contrast tbody td {
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border) !important;
+  vertical-align: middle;
+}
+.table-dark-contrast tbody tr:nth-child(odd) {
+  background-color: var(--color-surface);
+}
+.table-dark-contrast tbody tr:nth-child(even) {
+  background-color: var(--color-surface-alt);
+}
+/* Alternancia de tonos usando el violeta como base */
+.table-dark-contrast tbody tr:nth-child(odd) td {
+  background-color: var(--color-violet-border) !important; /* #3C3489 */
+}
+.table-dark-contrast tbody tr:nth-child(even) td {
+  background-color: #2E286A; !important; /* Un violeta un poco más oscuro para el contraste */
+}
+/* Borde de color a la izquierda de cada fila, según estado del turno */
+.row-espera { border-left: 3px solid #ba7517; }
+.row-proceso { border-left: 3px solid #185fa5; }
+.row-fin { border-left: 3px solid var(--color-accent); }
+
+/* Badges de estado (fondo sólido, no solo texto de color) */
+.badge-espera { background-color: var(--color-warning-bg); color: var(--color-warning-text); }
+.badge-proceso { background-color: var(--color-info-bg); color: var(--color-info-text); }
+.badge-fin { background-color: var(--color-success-bg); color: var(--color-success-text); }
