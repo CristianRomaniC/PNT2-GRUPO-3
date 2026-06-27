@@ -88,6 +88,14 @@ export const useLavaderoStore = defineStore('lavadero', {
       }
     },
 
+    eliminarTurnosDeCliente(clienteId) {
+      const cliente = this.usuarios.find(u => u.id === clienteId)
+      const nombre = cliente ? cliente.nombre : 'este cliente'
+      if (confirm(`¿Estás seguro de eliminar todos los turnos de ${nombre}?`)) {
+        this.turnos = this.turnos.filter(t => t.clienteId !== clienteId)
+      }
+    },
+
     actualizarPrecios(nuevosPrecios) {
       this.precios = { ...this.precios, ...nuevosPrecios }
     },

@@ -41,6 +41,7 @@
           v-model="password"
           type="password"
           placeholder="••••••"
+          @keyup.enter="ejecutarAccion"
           class="form-control form-control-dark"
         />
       </div>

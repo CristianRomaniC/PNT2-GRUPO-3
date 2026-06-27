@@ -178,6 +178,7 @@
               <tr>
                 <th>Nombre</th>
                 <th>Email</th>
+                <th>Contraseña</th>
                 <th>Rol</th>
                 <th>Acciones</th>
               </tr>
@@ -186,23 +187,38 @@
               <tr v-for="u in store.usuarios" :key="u.id">
                 <td>{{ u.nombre }}</td>
                 <td style="color: var(--color-text-muted);">{{ u.email }}</td>
+                <td style="color: var(--color-text-muted);">{{ u.password }}</td>
                 <td>
                   <span class="badge rounded-pill" :class="u.rol === 'admin' ? 'badge-espera' : 'badge-proceso'">
                     {{ u.rol.toUpperCase() }}
                   </span>
                 </td>
                 <td>
-                  <button @click="prepararEdicion(u)" class="btn btn-sm me-2" style="border: 1px solid var(--color-border); color: var(--color-text);">
-                    Editar
-                  </button>
-                  <button
-                    v-if="u.id !== store.usuarioLogueado?.id"
-                    @click="store.eliminarUsuario(u.id)"
-                    class="btn btn-sm"
-                    style="background-color: #501313; color: #F7C1C1; border: none;"
-                  >
-                    Eliminar
-                  </button>
+                  <div class="d-flex flex-wrap gap-1">
+                    <button
+                      @click="prepararEdicion(u)"
+                      class="btn btn-sm"
+                      style="border: 1px solid var(--color-border); color: var(--color-text);"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      v-if="u.rol !== 'admin'"
+                    @click="store.eliminarTurnosDeCliente(u.id)"
+                      class="btn btn-sm"
+                      style="border: 1px solid var(--color-warning-text); color: var(--color-warning-text);"
+                    >
+                      Borrar turnos
+                    </button>
+                    <button
+                      v-if="u.id !== store.usuarioLogueado?.id"
+                      @click="store.eliminarUsuario(u.id)"
+                      class="btn btn-sm"
+                      style="background-color: #501313; color: #F7C1C1; border: none;"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>

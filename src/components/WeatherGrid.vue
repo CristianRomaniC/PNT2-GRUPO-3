@@ -7,14 +7,14 @@
                 :class="{ seleccionado: fechaSeleccionada === dia.fechaCompleta }"
                 @click="seleccionarDia(dia)"
             >
-                <p class="mb-1 text-capitalize" style="font-size: 0.85rem; color: var(--color-text-muted);">{{ dia.dia }}</p>
+                <p class="mb-1 text-capitalize" style="font-size: 1rem; color: var(--color-text-muted);">{{ dia.dia }}</p>
 
                 <div class="icono">
                     {{ dia.icono }}
                 </div>
 
                 <p class="mb-0 fw-medium">{{ dia.temperatura }}°C</p>
-                <small style="color: var(--color-text-muted);">{{ dia.fecha }}</small>
+                <span style="color: var(--color-text-muted); font-size: 1rem;">{{ dia.fecha }}</span>
             </div>
         </div>
 

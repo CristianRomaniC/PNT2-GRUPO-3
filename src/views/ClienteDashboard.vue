@@ -25,7 +25,7 @@
           <button
             v-for="tipo in VEHICULOS"
             :key="tipo.key"
-            @click="tipoVehiculoSeleccionado = tipo.key"
+            @click="tipoVehiculoSeleccionado = tipo.key; horaSeleccionada = ''"
             class="btn d-flex flex-column align-items-center gap-1 px-4 py-2"
             :style="tipoVehiculoSeleccionado === tipo.key
               ? 'background-color: var(--color-surface-strong); border: 2px solid var(--color-accent); border-radius: 10px; color: var(--color-text); min-width: 90px;'
@@ -37,14 +37,56 @@
           </button>
         </div>
 
+        <!-- Patente con botón de anteriores -->
         <div class="mb-3" style="max-width: 320px;">
           <label class="form-label-dark d-block mb-1">Patente del vehículo</label>
-          <input
-            v-model="nuevaPatente"
-            type="text"
-            placeholder="Ej: ABC 123 / AB 123 AB"
-            class="form-control form-control-dark"
-          />
+
+          <div class="d-flex gap-2">
+            <input
+              v-model="nuevaPatente"
+              type="text"
+              placeholder="Ej: ABC 123 / AB 123 AB"
+              class="form-control form-control-dark"
+            />
+            <button
+              v-if="patentesPrevias.length > 0"
+              @click="mostrarDropdown = !mostrarDropdown"
+              class="btn btn-sm d-flex align-items-center gap-1"
+              style="background-color: var(--color-surface-strong); border: 1px solid var(--color-border); border-radius: 8px; color: var(--color-text); white-space: nowrap; font-size: 0.8rem;"
+            >
+              🕐 Anteriores
+            </button>
+          </div>
+
+          <!-- Dropdown de patentes anteriores -->
+          <div
+            v-if="mostrarDropdown && patentesPrevias.length > 0"
+            style="background-color: var(--color-surface-alt); border: 1px solid var(--color-border); border-radius: 8px; margin-top: 4px; overflow: hidden;"
+          >
+            <div
+              v-for="item in patentesPrevias"
+              :key="item.patente"
+              class="d-flex align-items-center justify-content-between px-3 py-2"
+              style="border-bottom: 1px solid var(--color-border); cursor: pointer;"
+            >
+              <div>
+                <div style="font-size: 0.85rem; font-weight: 500; color: var(--color-text); letter-spacing: 0.04em;">
+                  {{ item.patente }}
+                </div>
+                <div style="font-size: 0.75rem; color: var(--color-text-muted);">
+                  {{ getVehiculo(item.tipoVehiculo)?.icono }} {{ getVehiculo(item.tipoVehiculo)?.label }} · {{ formatearFecha(item.fecha) }}
+                </div>
+              </div>
+              <button
+                @click="usarPatente(item.patente)"
+                class="btn btn-sm"
+                style="font-size: 0.75rem; color: var(--color-accent); background-color: #0F3328; border: 1px solid #1d5c45; border-radius: 6px; padding: 2px 10px;"
+              >
+                Usar
+              </button>
+            </div>
+          </div>
+
           <p v-if="nuevaPatente && !patenteValida" class="mb-0 mt-1" style="color: #F09595; font-size: 0.8rem;">
             Patente inválida. Ej: ABC123 o AB123CD
           </p>
@@ -54,32 +96,28 @@
 
         <WeatherGrid @seleccionar="seleccionarFecha" />
 
-        <div class="my-3" style="max-width: 320px;">
-          <label class="form-label-dark d-block mb-1">Horario</label>
-          <select
-            v-model="horaSeleccionada"
-            class="form-select form-control-dark"
-            :disabled="!fechaSeleccionada || horariosDisponibles.length === 0"
+        <!-- Selector de horario por bandas -->
+        <div class="mt-3">
+          <label class="form-label-dark d-block mb-2">Horarios disponibles:</label>
+
+          <p
+            v-if="!tipoVehiculoSeleccionado || !fechaSeleccionada"
+            style="font-size: 0.82rem; color: var(--color-text-muted); font-style: italic;"
           >
-            <option value="">
-              {{
-                !fechaSeleccionada
-                  ? 'Seleccioná primero un día'
-                  : horariosDisponibles.length === 0
-                    ? 'No quedan horarios para ese día'
-                    : 'Seleccione un horario'
-              }}
-            </option>
-            <option v-for="hora in horariosDisponibles" :key="hora" :value="hora">
-              {{ hora }}
-            </option>
-          </select>
+            {{ !tipoVehiculoSeleccionado ? 'Seleccioná primero un vehículo' : 'Seleccioná primero un día' }}
+          </p>
+
+          <HorarioSelector
+            v-else
+            v-model="horaSeleccionada"
+            :horariosDisponibles="horariosDisponibles"
+          />
         </div>
 
         <!-- Resumen del precio -->
         <div
           v-if="tipoVehiculoSeleccionado"
-          class="d-inline-flex align-items-center gap-2 mb-3 px-3 py-2"
+          class="d-inline-flex align-items-center gap-2 mt-3 mb-1 px-3 py-2"
           style="background-color: var(--color-surface-alt); border: 1px solid var(--color-border); border-radius: 8px;"
         >
           <span style="color: var(--color-text-muted); font-size: 0.85rem;">Total a abonar:</span>
@@ -88,7 +126,7 @@
           </span>
         </div>
 
-        <div>
+        <div class="mt-3">
           <button
             @click="crearTurno"
             class="btn btn-accent"
@@ -134,6 +172,7 @@ import { ref, computed } from 'vue'
 import { useLavaderoStore } from '../stores/lavadero'
 import { useRouter } from 'vue-router'
 import WeatherGrid from '../components/WeatherGrid.vue'
+import HorarioSelector from '../components/HorarioSelector.vue'
 import { esCodigoLluvia } from '../composables/useClima'
 import { VEHICULOS, getVehiculo } from '../composables/vehiculos.js'
 
@@ -145,6 +184,41 @@ const fechaSeleccionada = ref('')
 const horaSeleccionada = ref('')
 const tipoVehiculoSeleccionado = ref('')
 const codigoClimaSeleccionado = ref(null)
+const mostrarDropdown = ref(false)
+
+// Patentes únicas usadas por el cliente logueado, ordenadas por más reciente
+const patentesPrevias = computed(() => {
+  const turnos = store.turnos
+    .filter((t) => t.clienteId === store.usuarioLogueado?.id)
+    .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+
+  // Una entrada por patente, conservando el turno más reciente de cada una
+  const vistas = new Set()
+  const resultado = []
+  for (const turno of turnos) {
+    if (!vistas.has(turno.patente)) {
+      vistas.add(turno.patente)
+      resultado.push({
+        patente: turno.patente,
+        tipoVehiculo: turno.tipoVehiculo,
+        fecha: turno.fecha,
+      })
+    }
+  }
+  return resultado
+})
+
+const usarPatente = (patente) => {
+  nuevaPatente.value = patente
+  mostrarDropdown.value = false
+}
+
+const formatearFecha = (fechaISO) => {
+  const d = new Date(fechaISO)
+  const dd = String(d.getDate()).padStart(2, '0')
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  return `${dd}/${mm}`
+}
 
 const seleccionarFecha = ({ fecha, codigoClima }) => {
   fechaSeleccionada.value = fecha
@@ -204,6 +278,9 @@ const horariosDisponibles = computed(() => {
   const esHoy = fechaSeleccionada.value === fechaHoyLocal()
   const ahora = new Date()
 
+  const duracionSeleccionada = getVehiculo(tipoVehiculoSeleccionado.value)?.duracion ?? 15
+  const slotsNecesarios = duracionSeleccionada / 15
+
   return horariosBase.filter((hora) => {
     if (bloqueados.has(hora)) return false
 
@@ -212,6 +289,16 @@ const horariosDisponibles = computed(() => {
       const horaSlot = new Date()
       horaSlot.setHours(h, m, 0, 0)
       if (horaSlot <= ahora) return false
+    }
+
+    const [h, m] = hora.split(':').map(Number)
+    const inicioEnMinutos = h * 60 + m
+
+    for (let i = 1; i < slotsNecesarios; i++) {
+      const minutoSiguiente = inicioEnMinutos + i * 15
+      const hh = String(Math.floor(minutoSiguiente / 60)).padStart(2, '0')
+      const mm = String(minutoSiguiente % 60).padStart(2, '0')
+      if (bloqueados.has(`${hh}:${mm}`)) return false
     }
 
     return true
@@ -254,6 +341,7 @@ const crearTurno = () => {
   horaSeleccionada.value = ''
   tipoVehiculoSeleccionado.value = ''
   codigoClimaSeleccionado.value = null
+  mostrarDropdown.value = false
 }
 
 const claseBadgeEstado = (estado) => {
