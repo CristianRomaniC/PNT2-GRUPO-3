@@ -96,6 +96,7 @@
           >
             <span style="font-size: 1.8rem;">{{ tipo.icono }}</span>
             <span style="font-size: 0.8rem; color: var(--color-text-muted);">{{ tipo.label }}</span>
+            <span style="font-size: 0.75rem; font-weight: 25;">{{ tipo.duracion }} minutos</span>
             <template v-if="editandoPrecios">
               <div class="input-group input-group-sm mt-1" style="max-width: 130px;">
                 <span class="input-group-text" style="background: var(--color-surface-strong); border-color: var(--color-border); color: var(--color-text-muted);">$</span>
