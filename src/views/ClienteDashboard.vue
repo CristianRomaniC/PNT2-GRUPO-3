@@ -33,6 +33,7 @@
           >
             <span style="font-size: 1.6rem; line-height: 1.2;">{{ tipo.icono }}</span>
             <span style="font-size: 0.8rem; font-weight: 500;">{{ tipo.label }}</span>
+            <span style="font-size: 0.75rem; font-weight: 25;">{{ tipo.duracion }} minutos</span>
             <span style="font-size: 0.75rem; color: var(--color-accent);">$ {{ store.precios[tipo.key].toLocaleString('es-AR') }}</span>
           </button>
         </div>
